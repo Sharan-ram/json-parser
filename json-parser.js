@@ -6,7 +6,7 @@ const example = fs
 //console.log(example);
 
 const spaceParser = input => {
-  input = input.replace(/\s+/, "");
+  input = input.replace(/^\s+/, "");
   return input;
 };
 
@@ -29,24 +29,24 @@ const numberParser = input => {
 };
 
 const stringParser = input => {
+  //console.log(input);
   input = spaceParser(input);
+  //console.log(input);
   if (input.startsWith('"')) {
     let slicedInput = input.slice(1);
     let len = 0;
-    for (let i = 0; slicedInput.length; i++) {
-      //console.log(slicedInput[i]);
-      if (slicedInput[i] === '"') {
-        if (slicedInput[i - 1] === "\\") {
-          len++;
-        } else {
-          len++;
-          break;
-        }
-      } else {
+    for (let i = 0; i < slicedInput.length; i++) {
+      if (slicedInput[i] === "\\" && slicedInput[i + 1] === '"') {
+        slicedInput = slicedInput.replace(/\\"/, '"');
         len++;
+        i++;
+      } else if (slicedInput[i] === '"' && slicedInput[i - 1] !== "\\") {
+        len++;
+        return ['"' + slicedInput.slice(0, len), slicedInput.slice(len)];
       }
+      len++;
     }
-    return [input.slice(0, len + 1), input.slice(len + 1)];
+    return null;
   }
   return null;
 };
@@ -59,6 +59,31 @@ const commaParser = input => {
 const colonParser = input => {
   input = spaceParser(input);
   return input.startsWith(":") ? [":", input.slice(1)] : null;
+};
+
+const arrayParser = input => {
+  input = spaceParser(input);
+  if (input.startsWith("[")) {
+    let outputArr = [];
+    let firstSliced = input.slice(1);
+    firstSliced = spaceParser(firstSliced);
+    let check = checkForValidArray(firstSliced);
+    if (check) return null;
+    let res = arrayHelper(firstSliced, outputArr);
+    if (!res) return null;
+    return res;
+  }
+};
+
+const arrayHelper = (input, outputArr) => {
+  let res = stringParser(input);
+  console.log(res);
+  return outputArr;
+};
+
+const checkForValidArray = input => {
+  let res = commaParser(input);
+  return res ? res : null;
 };
 
 const factoryParser = input => {
@@ -76,4 +101,5 @@ const output = input => {
 
 //console.log(spaceParser(example));
 //console.log(arrayParser(example));
-console.log(output(example));
+console.log(stringParser(example));
+//console.log(output(example));
