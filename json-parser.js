@@ -71,23 +71,21 @@ const arrayParser = input => {
   firstSliced = spaceParser(firstSliced)
   let check = commaParser(firstSliced)
   if (check) return null
-  if (firstSliced[0] === ']') return arrayHelper(firstSliced, outputArr)
+  // if (firstSliced[0] === ']') return arrayHelper(firstSliced, outputArr)
   return arrayHelper(firstSliced, outputArr)
 }
 
 const arrayHelper = (input, outputArr) => {
+  // console.log(input)
   let res
   if (input[0] === ']') return [outputArr, spaceParser(input.slice(1))]
+  // if (input[0] === ',' && input.length === 1) return null
   if (input[0] === ',') res = factoryParser(spaceParser(input.slice(1)))
   else res = factoryParser(input)
+  if (!res) return null
   if (res[1][0] !== ']' && res[1][0] !== ',') return null
   outputArr.push(res[0])
   return arrayHelper(res[1], outputArr)
-}
-
-const checkForComma = input => {
-  let comma = commaParser(input)
-  return comma || null
 }
 
 const factoryParser = input => {
@@ -102,10 +100,14 @@ const factoryParser = input => {
 
 const output = input => {
   let res = factoryParser(input)
-  return res || 'invalid json'
+  if (res === null) return 'invalid json'
+  if (spaceParser(res[1]) !== '') return output(res[1])
+  return res[0]
 }
 
+console.log(output(example))
 // console.log(spaceParser(example));
 // console.log(arrayParser(example))
 // console.log(stringParser(example))
 // console.log(output(example));
+// console.log(numberParser(example))
