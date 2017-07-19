@@ -26,7 +26,7 @@ const numberParser = input => {
   input = spaceParser(input)
   let numberPattern = /^[+-]?\d*\.?(\d+[eE]?[+-]?)?\d+/
   let res = input.match(numberPattern)
-  return res ? [parseFloat(res[0]), input.slice(res[0].length)] : null
+  return res ? [parseFloat(res[0]), spaceParser(input.slice(res[0].length))] : null
 }
 
 const stringParser = input => {
@@ -57,10 +57,12 @@ const commaParser = input => {
   return input.startsWith(',') ? [',', input.slice(1)] : null
 }
 
+/*
 const colonParser = input => {
   input = spaceParser(input)
   return input.startsWith(':') ? [':', input.slice(1)] : null
 }
+*/
 
 const arrayParser = input => {
   // console.log(input);
@@ -88,6 +90,30 @@ const arrayHelper = (input, outputArr) => {
   return arrayHelper(res[1], outputArr)
 }
 
+const objectParser = input => {
+  input = spaceParser(input)
+  if (!input.startsWith('{')) return null
+  let firstSliced = spaceParser(input.slice(1))
+  if (firstSliced[0] !== '"' && firstSliced[0] !== '}') return null
+  let outputObj = {}
+  return objectHelper(firstSliced, outputObj)
+}
+
+const objectHelper = (input, outputObj) => {
+  // console.log(outputObj)
+  if (input[0] === '}') return [outputObj, spaceParser(input.slice(1))]
+  let res = factoryParser(input)
+  // console.log(res)
+  if (!res) return null
+  if (res[1][0] !== ':') return null
+  let anotherRes = factoryParser(spaceParser(res[1].slice(1)))
+  outputObj[res[0]] = anotherRes[0]
+  // console.log(outputObj)
+  if (anotherRes[1][0] !== ',' && anotherRes[1][0] !== '}') return null
+  if (anotherRes[1][0] === '}') return [outputObj, spaceParser(anotherRes[1].slice(1))]
+  return objectHelper(spaceParser(anotherRes[1].slice(1)), outputObj)
+}
+
 const factoryParser = input => {
   let res
   if (res = nullParser(input)) return res
@@ -95,6 +121,7 @@ const factoryParser = input => {
   if (res = numberParser(input)) return res
   if (res = stringParser(input)) return res
   if (res = arrayParser(input)) return res
+  if (res = objectParser(input)) return res
   return null
 }
 
@@ -105,9 +132,10 @@ const output = input => {
   return res[0]
 }
 
-console.log(output(example))
+// console.log(output(example))
 // console.log(spaceParser(example));
 // console.log(arrayParser(example))
 // console.log(stringParser(example))
 // console.log(output(example));
 // console.log(numberParser(example))
+console.log(objectParser(example))
