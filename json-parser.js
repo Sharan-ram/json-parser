@@ -57,13 +57,6 @@ const commaParser = input => {
   return input.startsWith(',') ? [',', input.slice(1)] : null
 }
 
-/*
-const colonParser = input => {
-  input = spaceParser(input)
-  return input.startsWith(':') ? [':', input.slice(1)] : null
-}
-*/
-
 const arrayParser = input => {
   // console.log(input);
   input = spaceParser(input)
@@ -73,7 +66,6 @@ const arrayParser = input => {
   firstSliced = spaceParser(firstSliced)
   let check = commaParser(firstSliced)
   if (check) return null
-  // if (firstSliced[0] === ']') return arrayHelper(firstSliced, outputArr)
   return arrayHelper(firstSliced, outputArr)
 }
 
@@ -81,7 +73,6 @@ const arrayHelper = (input, outputArr) => {
   // console.log(input)
   let res
   if (input[0] === ']') return [outputArr, spaceParser(input.slice(1))]
-  // if (input[0] === ',' && input.length === 1) return null
   if (input[0] === ',') res = factoryParser(spaceParser(input.slice(1)))
   else res = factoryParser(input)
   if (!res) return null
