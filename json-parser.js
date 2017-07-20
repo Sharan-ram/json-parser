@@ -33,21 +33,19 @@ const stringParser = input => {
   // console.log(input);
   input = spaceParser(input)
   // console.log(input);
-  if (input.startsWith('"')) {
-    let slicedInput = input.slice(1)
-    let len = 0
-    for (let i = 0; i < slicedInput.length; i++) {
-      if (slicedInput[i] === '\\' && slicedInput[i + 1] === '"') {
-        slicedInput = slicedInput.replace(/\\"/, '"')
-        len++
-        i++
-      } else if (slicedInput[i] === '"' && slicedInput[i - 1] !== '\\') {
-        len++
-        return [slicedInput.slice(0, len - 1), spaceParser(slicedInput.slice(len))]
-      }
+  if (!input.startsWith('"')) return null
+  let slicedInput = input.slice(1)
+  let len = 0
+  for (let i = 0; i < slicedInput.length; i++) {
+    if (slicedInput[i] === '\\' && slicedInput[i + 1] === '"') {
+      slicedInput = slicedInput.replace(/\\"/, '"')
       len++
+      i++
+    } else if (slicedInput[i] === '"' && slicedInput[i - 1] !== '\\') {
+      len++
+      return [slicedInput.slice(0, len - 1), spaceParser(slicedInput.slice(len))]
     }
-    return null
+    len++
   }
   return null
 }
@@ -123,10 +121,10 @@ const output = input => {
   return res[0]
 }
 
-// console.log(output(example))
+console.log(output(example))
 // console.log(spaceParser(example));
 // console.log(arrayParser(example))
 // console.log(stringParser(example))
 // console.log(output(example));
 // console.log(numberParser(example))
-console.log(objectParser(example))
+// console.log(objectParser(example))
