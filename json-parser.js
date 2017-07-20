@@ -90,12 +90,14 @@ const objectParser = input => {
 
 const objectHelper = (input, outputObj) => {
   // console.log(outputObj)
+  if (input[0] === ',' && input[1] !== '{') return null
   if (input[0] === '}') return [outputObj, spaceParser(input.slice(1))]
   let res = factoryParser(input)
   // console.log(res)
   if (!res) return null
   if (res[1][0] !== ':') return null
   let anotherRes = factoryParser(spaceParser(res[1].slice(1)))
+  if (!anotherRes) return null
   outputObj[res[0]] = anotherRes[0]
   // console.log(outputObj)
   if (anotherRes[1][0] !== ',' && anotherRes[1][0] !== '}') return null
@@ -117,7 +119,7 @@ const factoryParser = input => {
 const output = input => {
   let res = factoryParser(input)
   if (res === null) return 'invalid json'
-  if (spaceParser(res[1]) !== '') return output(res[1])
+  if (spaceParser(res[1]) !== '') return JSON.stringify(output(res[1]), null, 2)
   return res[0]
 }
 
